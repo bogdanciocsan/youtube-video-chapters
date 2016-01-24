@@ -3,7 +3,7 @@
         namespace.replaceHash = function(newhash) {
             if ((''+newhash).charAt(0) !== '#') newhash = location.pathname + '#' + newhash;
             history.replaceState('', '', newhash);
-        }
+        };
     } else {
         var hash = location.hash;
         namespace.replaceHash = function(newhash) {
@@ -14,87 +14,7 @@
 
 })(window);
 
-
-function addRemoveActiveClassFn(allItems, activeItem, removedClass, activeClass) {
-   var offClass = removedClass || "active";
-   var onClass = activeClass || "active";
-   allItems.removeClass(offClass);
-   activeItem.addClass(onClass);
-}
-
-function checkCurrentChapter(currentTime, chaptersContainer) {
-    var $chapterItems = $(chaptersContainer).children(".js-chapter-item");
-    $chapterItems.each(function() {
-      var hashValue = this.getAttribute('data-time') + "seconds";
-      if ((currentTime > $(this).data("time")) && (currentTime < $(this).next().data("time"))) {
-        addRemoveActiveClassFn($chapterItems, $(this));
-//        window.replaceHash(hashValue);
-      }
-      else if ((currentTime > $(this).data("time")) && ($(this).next().data("time") === null)) {
-        addRemoveActiveClassFn($chapterItems, $(this));
-//        window.replaceHash(hashValue);
-      }
-    });
-}
-// chapter controls
-function playStopFn(chaptersContainer, player, playerData) {
-  var playerIsPlaying; 
-  var playerIsPaused;
-  var playerIsNotStarted;
-  var playBtnReady = $(chaptersContainer).children(".js-play-stop-btn").find(".glyphicon");
-  switch (playerData) {
-    case -1:
-      playerIsNotStarted = true;
-      break;
-    case 1: 
-      playerIsPlaying = true;
-      break;
-    case 2:
-      playerIsPaused = true;
-      break;
-  }
-  if (playerIsPlaying) {
-      addRemoveActiveClassFn(playBtnReady, playBtnReady, "glyphicon-play", "glyphicon-pause");
-  }
-  else if (playerIsPaused)  {
-      addRemoveActiveClassFn(playBtnReady, playBtnReady, "glyphicon-pause", "glyphicon-play");
-  }
- 
-  $(chaptersContainer).on("click", ".js-play-stop-btn", function() {
-    var playBtnClicked = $(this).find(".glyphicon");                       
-    if (playBtnClicked.hasClass("glyphicon-play")) {
-       player.playVideo(); // start video
-    }
-    else if (playerIsNotStarted) {
-       player.playVideo(); // start video
-    }
-    else {
-       player.pauseVideo(); // pause video
-    }
-  });
-}
-
-function checkCurrentChapterLinkFn(chaptersContainer) {
-  var $chapterItems = $(chaptersContainer).children(".js-chapter-item");
-  $chapterItems.each(function() {
-    var currentChapterURL = window.location.hash.replace("seconds", "").replace("#","").trim();
-    if ($(this).data("time") == currentChapterURL) {
-      addRemoveActiveClassFn($chapterItems, $(this));
-    }
-  });
-}
-function changeChapterFn(chaptersContainer, player) {
-  $(chaptersContainer).find(".js-chapter-item").on("click", function () {
-    var $chapterItems = $(chaptersContainer).children(".js-chapter-item");
-    addRemoveActiveClassFn($chapterItems, $(this));
-    var currentTime = Number(this.getAttribute('data-time'));
-    player.seekTo(currentTime); // change to chapter time
-    var hashValue = this.getAttribute('data-time') + "seconds";
-//    window.replaceHash(hashValue);
-  });   
-}
-
-// Youtube Modified API 
+// Youtube Modified API
 // based on http://gdata-samples.googlecode.com/svn/trunk/ytplayer/ChapterMarkerPlayer/index.html
 // BEGIN_INCLUDE(namespace)
 window.ChapterMarkerPlayer = {
@@ -133,7 +53,7 @@ window.ChapterMarkerPlayer = {
             return a - b;
         });
         // END_INCLUDE(time_sort)
-        var chaptersContainer = params.chaptersContainer; 
+        var chaptersContainer = params.chaptersContainer;
         var width = params.width || DEFAULT_PLAYER_WIDTH;
         var currentVideoContainer = document.getElementById(params.container);
         var height = (currentVideoContainer.offsetWidth / (16 / 9)) || DEFAULT_PLAYER_HEIGHT;
@@ -158,9 +78,9 @@ window.ChapterMarkerPlayer = {
                 var scriptTag = document.createElement('script');
                 // This scheme-relative URL will use HTTPS if the host page is accessed via HTTPS,
                 // and HTTP otherwise.
-                scriptTag.src = 'https://www.youtube.com/player_api';
+                scriptTag.src = 'https://www.youtube.com/iframe_api';
                 var firstScriptTag = document.getElementsByTagName('script')[0];
-                firstScriptTag.parentNode.insertBefore(scriptTag, firstScriptTag);    
+                firstScriptTag.parentNode.insertBefore(scriptTag, firstScriptTag);
                 // END_INCLUDE(load_api)
             }
             // BEGIN_INCLUDE(queue_callbacks)
@@ -178,6 +98,90 @@ window.ChapterMarkerPlayer = {
         // Calls the YT.Player constructor with the appropriate options to add the iframe player
         // instance to a parent element.
         // This is a private method that isn't exposed via the ChapterMarkerPlayer namespace.
+
+        function addRemoveActiveClassFn(allItems, activeItem, removedClass, activeClass) {
+           var offClass = removedClass || "active";
+           var onClass = activeClass || "active";
+           allItems.removeClass(offClass);
+           activeItem.addClass(onClass);
+        }
+
+        function checkCurrentChapter(currentTime, chaptersContainer) {
+            var $chapterItems = $(chaptersContainer).find(".js-chapter-item");
+            $chapterItems.each(function() {
+              var hashValue = $(this).attr('data-time') + "seconds";
+              if (typeof $(this).next(".js-chapter-item") != "undefined") {
+                if ((currentTime > $(this).attr('data-time'))) {
+                  addRemoveActiveClassFn($chapterItems, $(this));
+                //        window.replaceHash(hashValue);
+                }
+              }
+              else {
+                addRemoveActiveClassFn($chapterItems, $(this));
+              }
+
+            });
+        }
+        // chapter controls
+        function playStopFn(chaptersContainer, player, playerData) {
+          var playerIsPlaying;
+          var playerIsPaused;
+          var playerIsNotStarted;
+          var playBtnReady = $(chaptersContainer).children(".js-play-stop-btn").find(".glyphicon");
+          switch (playerData) {
+            case -1:
+              playerIsNotStarted = true;
+              break;
+            case 1:
+              playerIsPlaying = true;
+              break;
+            case 2:
+              playerIsPaused = true;
+              break;
+          }
+          if (playerIsPlaying) {
+              addRemoveActiveClassFn(playBtnReady, playBtnReady, "glyphicon-play", "glyphicon-pause");
+          }
+          else if (playerIsPaused)  {
+              addRemoveActiveClassFn(playBtnReady, playBtnReady, "glyphicon-pause", "glyphicon-play");
+          }
+
+          $(chaptersContainer).on("click", ".js-play-stop-btn", function() {
+            var playBtnClicked = $(this).find(".glyphicon");
+            if (playBtnClicked.hasClass("glyphicon-play")) {
+               player.playVideo(); // start video
+            }
+            else if (playerIsNotStarted) {
+               player.playVideo(); // start video
+            }
+            else {
+               player.pauseVideo(); // pause video
+            }
+          });
+        }
+
+        function checkCurrentChapterLinkFn(chaptersContainer) {
+          // var $chapterItems = $(chaptersContainer).children(".js-chapter-item");
+          // $chapterItems.each(function() {
+          //   var currentChapterURL = window.location.hash.replace("seconds", "").replace("#","").trim();
+          //   if ($(this).data("time") == currentChapterURL) {
+          //     addRemoveActiveClassFn($chapterItems, $(this));
+          //   }
+          // });
+        }
+        function changeChapterFn(chaptersContainer, player) {
+          $(chaptersContainer).find(".js-chapter-item").on("click", function (e) {
+            e.preventDefault();
+            var $chapterItems = $(chaptersContainer).children(".js-chapter-item");
+            var currentTime = Number($(this).attr('data-time'));
+            // console.log(currentTime);
+            var hashValue = currentTime + "seconds";
+            player.seekTo(currentTime); // change to chapter time
+            addRemoveActiveClassFn($chapterItems, $(this));
+        //    window.replaceHash(hashValue);
+          });
+        }
+
         function initializePlayer(containerElement, params) {
             var playerContainer = document.createElement('div');
             containerElement.appendChild(playerContainer);
@@ -192,7 +196,7 @@ window.ChapterMarkerPlayer = {
                 width: playerOptions.width || width,
                 // Unless playerVars are explicitly provided, use a reasonable default of { autohide: 1 },
                 // which hides the controls when the mouse isn't over the player.
-                 playerVars: playerOptions.playerVars || { autohide: 1, autoplay: 1, theme: "light", color: "white", showinfo: 0, rel: 0, controls: 1, modestbranding: 1},
+                playerVars: playerOptions.playerVars || { autohide: 1, autoplay: 1, theme: "light", color: "white", showinfo: 0, rel: 0, controls: 1, modestbranding: 1, origin: window.location.host},
                 videoId: params.videoId,
                 events: {
                     onReady: playerOptions.onReady || onReadySeekTime,
@@ -201,7 +205,7 @@ window.ChapterMarkerPlayer = {
                     onError: playerOptions.onError
                 }
             });
-            
+
             function onStateChange(event) {
               // calculate size for chapter elements
               var $timeTracking;
@@ -212,29 +216,26 @@ window.ChapterMarkerPlayer = {
               var $videoDuration = player.getDuration();
               var $widthProcent = $chaptersContainerWidth / $videoDuration;
               var $currentTotalWidth = 0;
-              
+
               $chapterItems.each(function() {
                 var $currentChapterWidth = 0;
-                if ($(this).next().data("time") !== null) {
-                  $currentChapterWidth = ($(this).next().data("time") - $(this).data("time")) * $widthProcent - 50;
-                  $currentTotalWidth = $currentTotalWidth + $currentChapterWidth; 
+                if ($(this).next().length > 0) {
+                  $currentChapterWidth = ($(this).next().data("time") - $(this).data("time")) * $widthProcent - 42;
+                  $currentTotalWidth = $currentTotalWidth + $currentChapterWidth;
                   $(this).css("width", ($currentChapterWidth / $chaptersContainerWidth) * 100 + "%");
                 }
                 else {
-                  $currentChapterWidth = $chaptersContainerWidth - $currentTotalWidth - 50;
+                  $currentChapterWidth = $chaptersContainerWidth - $currentTotalWidth - 42;
                   $(this).css("width", ($currentChapterWidth / $chaptersContainerWidth) * 100 + "%");
                 }
                 $(this).addClass("visible");
               });
+
+              // console.log($currentTotalWidth);
               //console.log(playerData);
               playStopFn(chaptersContainer, player, playerData);
-              
-              if (event.data === 0) {
-                if ($('.js-youtube-next-modal').find(".js-modal-next-link").attr("href") != undefined) {
-                   $('.js-youtube-next-modal').modal('show');
-                }
-              }
-              else if (event.data === 1) {
+
+              if (event.data === 1) {
                 $timeTracking = setInterval(function() {
                   var currentTime = event.target.getCurrentTime();
                   checkCurrentChapter(currentTime, chaptersContainer);
@@ -242,12 +243,12 @@ window.ChapterMarkerPlayer = {
                 }, 0.5);
               }
               else {
-                clearInterval($timeTracking); 
+                clearInterval($timeTracking);
               }
-              
-              
+
+
             }
-          
+
             function onReadySeekTime(event) {
               var playerData = -1;
               var player = event.target;
@@ -255,12 +256,12 @@ window.ChapterMarkerPlayer = {
               if (window.location.hash !== "") {
                 var currentTime = Number(window.location.hash.replace("seconds", "").replace("#","").trim());
                 player.seekTo(currentTime);
-              } 
+              }
               playStopFn(chaptersContainer, player, playerData);
             }
         }
 
-        // END_INCLUDE(load_player) 
+        // END_INCLUDE(load_player)
         // BEGIN_INCLUDE(format_timestamp)
         // Takes a number of seconds and returns a #h##m##s string.
         function formatTimestamp(timestamp) {
@@ -292,15 +293,15 @@ window.ChapterMarkerPlayer = {
                 throw 'The "container" parameter must be set to the id of a existing HTML element.';
             }
             // END_INCLUDE(validation2)
-            
+
             var player = initializePlayer(containerElement, params);
             // added by smartpage 11.02.2015
- 
-            // check current chapter hash link 
+
+            // check current chapter hash link
             checkCurrentChapterLinkFn(chaptersContainer);
             // chapters seek function
             changeChapterFn(chaptersContainer, player);
-    
+
         }
     },
     // BEGIN_INCLUDE(callback_array)
@@ -308,5 +309,5 @@ window.ChapterMarkerPlayer = {
     // API has been loaded. It avoids a race condition that would lead to issues if multiple
     // ChapterMarkerPlayer.insert() calls are made before the API is available.
     onYouTubePlayerAPIReadyCallbacks: []
-    // END_INCLUDE(callback_array)                              
+    // END_INCLUDE(callback_array)
 };
