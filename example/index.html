@@ -1,0 +1,55 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Youtube Example - Video chapters</title>
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <meta name="author" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <!--@Snippet(MetaOG)-->
+    <!-- Mobile Specific Metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
+    <link href="../css/main.css" rel="stylesheet">
+</head>
+<body class="one-level">
+    <div class="container">
+                <div class="video-player-container js-video-player-container row">
+                  <div class="col-sm-10 col-sm-offset-1">
+                  	<div id="youtube-player" class="js-youtube-player row video-container"></div>
+                      <div class="chapter-list-container row">
+                      <ul class="chapter-list js-youtube-chapters list-inline">
+                      <li class="play-btn js-play-stop-btn"><i class="glyphicon glyphicon-play"></i></li>
+                         <li data-time='0' class='chapter-item js-chapter-item'><span class="hidden-xs hidden-sm js-chapter-item-text">Part 1:start</span></li>
+                          <li data-time='60' class='chapter-item js-chapter-item'><span class="hidden-xs hidden-sm js-chapter-item-text">Part 2: 60s</span></li>
+                          <li data-time='120' class='chapter-item js-chapter-item'><span class="hidden-xs hidden-sm js-chapter-item-text">Part 3: 120s</span></li>
+                      </ul>
+                  </div>
+                  </div>
+                  
+                </div>
+        </div>
+    <!-- End Document
+    ================================================== -->
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="../js/youtube-chapters.js"></script>
+    <script type="text/javascript">
+       $(document).ready(function() { 
+         ChapterMarkerPlayer.insert({
+            container: "youtube-player",
+            videoId: "DMEa0CJbAUs",
+            width: "100%",
+            chaptersContainer: ".js-youtube-chapters"
+        });
+       });
+       
+      
+    </script>
+
+</body>
+</html>
